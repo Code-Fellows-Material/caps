@@ -23,15 +23,13 @@ server.on("connection", (socket) => {
 
 //=============================================Caps=============================================
 
-
 //================middleware================
 
 caps.use((socket, next) => {
-  const obj = JSON.parse(JSON.stringify(socket.handshake.query));
-  const name = obj.CustomId
-  socket.id = name;
-  console.log("here")
-  next(null, true);
+    const obj = JSON.parse(JSON.stringify(socket.handshake.query));
+    const name = obj.CustomId;
+    socket.id = name;
+    next(null, true);
 });
 
 //================Events================
@@ -39,20 +37,20 @@ caps.use((socket, next) => {
 caps.on("connection", (socket) => {
     console.log("CAPS CONNECTION FROM:", socket.id);
 
-
+    // Listen
     socket.on("disconnect", (reason) => {
         console.log("CAPS DISCONNECTION FROM:", socket.id, "\nREASON:", reason);
     });
 
-    socket.on("message", (sender, message, room) => {
-        console.log(`CAPS: Received message from: ${sender} - ${message}`);
+    socket.on("message", (message, room) => {
+        console.log(`CAPS: Received message from: ${socket.id} - ${message}`);
 
         if (!room) {
             socket.broadcast.emit(
-                `CAPS: Hear Ye Hear Ye! A Message to all! From: ${sender} - ${message}`
+                `CAPS: Hear Ye Hear Ye! A Message to all! From: ${socket.id} - ${message}`
             );
         } else {
-            socket.to(room).emit("message", sender, message, room);
+            socket.to(room).emit("message", socket.id, message, room);
         }
     });
 
@@ -60,8 +58,20 @@ caps.on("connection", (socket) => {
         console.log(`CAPS: Joining room: ${room}`);
         socket.join(room);
     });
+
+    socket.on("pickup-requested", (payload, room) => {
+        console.log(
+            `CAPS: A pickup has been requested from: ${socket.id}`
+        );
+        socket.to(room).emit("pickup", socket.id, payload);
+    });
+
+    socket.on("in-transit", (payload, room) => {
+      console.log(
+          `CAPS: ${socket.id} has picked up order# ${payload.orderID} and is in transit`
+      );
+      // setTimeout((payload, room) => {
+        socket.to(room).emit("delivered", payload);
+      // }, 1000);
+    });
 });
-
-
-
-
