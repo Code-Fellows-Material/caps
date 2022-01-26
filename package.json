@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "server": "nodemon ./server/server.js",
+    "delivery": "node ./client/delivery.js",
+    "vendor": "node ./client/vendor.js",
     "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "jest": "^27.4.7"
+    "jest": "^27.4.7",
+    "socket.io": "^4.4.1",
+    "socket.io-client": "^4.4.1"
   }
 }
