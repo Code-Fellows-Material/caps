@@ -1,6 +1,6 @@
-# CAPS - Events
+# CAPS - Events w/ Queue
 
-An event driven application that “distributes” the responsibility for logging to separate modules, using only events to trigger logging based on activity - for Code Fellows 401
+An event driven application that “distributes” the responsibility for logging to separate modules, using only events to trigger logging based on activity, using a standard Queue system - for Code Fellows 401
 
 ## Installation
 
@@ -16,5 +16,5 @@ To start server run : `npm start`
 
 ## Whiteboard
 
-![whiteboard](Lab%20Class%2011_%20Caps.jpg)
+![whiteboard](14_ Caps_Queue.jpg)
 
