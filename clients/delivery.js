@@ -11,28 +11,53 @@ const roomID = "Kellen's room";
 deliveryClient.on("connect", () => {
     logger("DELIVERY CONNECTED");
 
-    deliveryClient.emit("join-room", roomID);
+    joinRoom(roomID);
+    checkOrders();
+    // setTimeout(() => {
+    //     send("Hi!", room);
+    // }, 500);
+    setTimeout(() => {}, 500);
 
     // setTimeout(() => {
-    //     deliveryClient.emit("message", "Hello from vendor", roomID);
-    // }, 500);
+    //     console.log("checking orders");
+    //     deliveryClient.emit("check-orders");
+    // }, 200);
 
     // Listen
-    deliveryClient.on("message", (from, message, room) => {
-      logger(`MESSAGE IN: ${room} FROM: ${from} MESSAGE: ${message}`);
+    deliveryClient.on("package-info", (pkg) => {
+      console.log("Package Info:", pkg.id);
+      if(pkg) deliveryClient.emit("in-transit", pkg, roomID);
     });
 
-    deliveryClient.on("pickup", (from, payload) =>{
-      logger(`DELIVERY: Pickup Requested From: ${from}`);
-      logger(`DELIVERY: Picking Up: order #${payload.orderID}`);
-      deliveryClient.emit("in-transit", payload, roomID);
+    deliveryClient.on("message", (from, message, room) => {
+        logger(`MESSAGE IN: ${room} FROM: ${from} MESSAGE: ${message}`);
+    });
+
+    deliveryClient.on("pickup", (from, pkg) => {
+        logger(`DELIVERY: Pickup Requested From: ${from}`);
+        logger(`DELIVERY: Picking Up: order #${pkg.payload.orderID}`);
+        setTimeout(() => {
+            deliveryClient.emit("in-transit", pkg, roomID);
+        }, 2000);
     });
 });
 
+//=========================================Helper Functions=========================================
 
-
-const logger = (message) => {
-  console.log(message)
+function send(payload, room) {
+    deliveryClient.emit("message", payload, room);
 }
 
-module.exports = {log: logger};
+function checkOrders() {
+    deliveryClient.emit("check-orders");
+}
+
+function joinRoom(room) {
+    deliveryClient.emit("join-room", room);
+}
+
+const logger = (message) => {
+    console.log(message);
+};
+
+module.exports = { log: logger };

@@ -18,28 +18,46 @@ const orders = [
 ];
 
 vendorClient.on("connect", () => {
+
+  //================================ Listen==============================================
   logger("VENDOR CONNECTED");
 
-    vendorClient.emit("join-room", roomID);
+  joinRoom(roomID);
 
-    setTimeout(() => {
-      logger(`VENDOR: Requesting Pickup`)
-      vendorClient.emit("pickup-requested", orders[0], roomID);
-    }, 2000);
+  setTimeout(() => {
+    logger(`VENDOR: Requesting Pickup`)
+    requestPickup(orders[0], roomID);
+  }, 2000);
 
     // setTimeout(() => {
-    //   vendorClient.emit("message", "hello from delivery", roomID);
+    //   send("Hi!", room);
     // }, 500);
 
-    // Listen
+  //================================ Listen==============================================
+
     vendorClient.on("message", (from, message, room) => {
       logger(`MESSAGE IN: ${room} FROM: ${from} MESSAGE: ${message}`);
     });
-    vendorClient.on("delivered", (payload) =>
-      logger(`VENDOR: Thank you for delivering order# ${payload.orderID}`)
+    vendorClient.on("delivered", (pkg) =>
+      logger(`VENDOR: Thank you for delivering order# ${pkg.pkg}`)
     );
+  
 });
 
+
+//=========================================Helper Functions=========================================
+
+function send(payload, room){
+  vendorClient.emit("message", payload, room);
+}
+
+function requestPickup(order, room){
+  vendorClient.emit("pickup-requested", order, room);
+}
+
+function joinRoom(room){
+  vendorClient.emit("join-room", room);
+}
 
 const logger = (message) => {
   console.log(message)

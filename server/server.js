@@ -1,13 +1,9 @@
 "use strict";
-
-const { from } = require("form-data");
 const io = require("socket.io");
-
+const uuid = require("uuid").v4;
 const PORT = process.env.PORT || 3000;
 
 const server = io(PORT);
-
-const vendorID = "Mya's Munchies";
 
 const caps = server.of("/caps");
 
@@ -22,6 +18,24 @@ server.on("connection", (socket) => {
 });
 
 //=============================================Caps=============================================
+
+//=======================Queue=======================
+
+const packageQueue = {
+    packages: {},
+    addPackage: function (pkg) {
+        let id = uuid();
+        this.packages[id] = pkg;
+        console.log("Packages in Queue:", this.packages);
+        return {
+            id,
+            payload: pkg,
+        };
+    },
+    removePackage: function (id) {
+        delete packageQueue.packages[id];
+    },
+};
 
 //================middleware================
 
@@ -59,19 +73,32 @@ caps.on("connection", (socket) => {
         socket.join(room);
     });
 
-    socket.on("pickup-requested", (payload, room) => {
-        console.log(
-            `CAPS: A pickup has been requested from: ${socket.id}`
-        );
-        socket.to(room).emit("pickup", socket.id, payload);
+    socket.on("check-orders", () => {
+        console.log(`CAPS: Request to check orders from: ${socket.id}`);
+        Object.keys(packageQueue.packages).forEach((id) => {
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', id)
+            socket.emit("package-info", {
+                id,
+                pkg: packageQueue.packages[id]
+            });
+        });
     });
 
-    socket.on("in-transit", (payload, room) => {
-      console.log(
-          `CAPS: ${socket.id} has picked up order# ${payload.orderID} and is in transit`
-      );
-      // setTimeout((payload, room) => {
-        socket.to(room).emit("delivered", payload);
-      // }, 1000);
+    socket.on("pickup-requested", (payload, room) => {
+        console.log(`CAPS: A pickup has been requested from: ${socket.id}`);
+        let pkg = packageQueue.addPackage(payload);
+        socket.to(room).emit("pickup", socket.id, pkg);
+    });
+
+    socket.on("in-transit", (pkg, room) => {
+        // console.log(
+        //     `CAPS: ${socket.id} has picked up order# ${pkg.pkg.payload} and is in transit`
+        // );
+
+        console.log("pkg:", pkg);
+        packageQueue.removePackage(pkg.id);
+        console.log("Packages in Queue:", packageQueue.packages);
+        socket.to(room).emit("delivered", pkg);
+        
     });
 });
