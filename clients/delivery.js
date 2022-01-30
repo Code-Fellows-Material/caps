@@ -25,8 +25,8 @@ deliveryClient.on("connect", () => {
 
     // Listen
     deliveryClient.on("package-info", (pkg) => {
-      console.log("Package Info:", pkg.id);
-      if(pkg) deliveryClient.emit("in-transit", pkg, roomID);
+        console.log("Package Info:", pkg.id);
+        if(pkg) deliveryClient.emit("in-transit", pkg, roomID);
     });
 
     deliveryClient.on("message", (from, message, room) => {

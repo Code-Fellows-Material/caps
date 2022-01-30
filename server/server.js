@@ -97,8 +97,7 @@ caps.on("connection", (socket) => {
 
         console.log("pkg:", pkg);
         packageQueue.removePackage(pkg.id);
-        console.log("Packages in Queue:", packageQueue.packages);
         socket.to(room).emit("delivered", pkg);
-        
+        console.log("Packages in Queue:", packageQueue.packages);       
     });
 });
