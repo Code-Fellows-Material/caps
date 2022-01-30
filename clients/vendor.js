@@ -39,7 +39,7 @@ vendorClient.on("connect", () => {
       logger(`MESSAGE IN: ${room} FROM: ${from} MESSAGE: ${message}`);
     });
     vendorClient.on("delivered", (pkg) =>
-      logger(`VENDOR: Thank you for delivering order# ${pkg.pkg}`)
+      logger(`VENDOR: Thank you for delivering order #${JSON.stringify(pkg.pkg.orderID)}`)
     );
   
 });
@@ -60,7 +60,7 @@ function joinRoom(room){
 }
 
 const logger = (message) => {
-  console.log(message)
-}
+    console.log(message);
+};
 
-module.exports = {log: logger};
+module.exports = { log: logger };

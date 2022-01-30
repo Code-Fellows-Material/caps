@@ -13,15 +13,6 @@ deliveryClient.on("connect", () => {
 
     joinRoom(roomID);
     checkOrders();
-    // setTimeout(() => {
-    //     send("Hi!", room);
-    // }, 500);
-    setTimeout(() => {}, 500);
-
-    // setTimeout(() => {
-    //     console.log("checking orders");
-    //     deliveryClient.emit("check-orders");
-    // }, 200);
 
     // Listen
     deliveryClient.on("package-info", (pkg) => {

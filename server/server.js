@@ -23,6 +23,7 @@ server.on("connection", (socket) => {
 
 const packageQueue = {
     packages: {},
+    deliveredPackages: {},
     addPackage: function (pkg) {
         let id = uuid();
         this.packages[id] = pkg;
@@ -34,6 +35,20 @@ const packageQueue = {
     },
     removePackage: function (id) {
         delete packageQueue.packages[id];
+        console.log('Removed package.')
+    },
+    addDelivered: function (pkg) {
+        let id = uuid();
+        this.deliveredPackages[id] = pkg;
+        console.log("deliveredPackages in Queue:", this.deliveredPackages);
+        return {
+            id,
+            payload: pkg,
+        };
+    },
+    removeDelivered: function (id) {
+        delete deliveredPackages.packages[id];
+        console.log('Removed deliveredPackages.')
     },
 };
 
